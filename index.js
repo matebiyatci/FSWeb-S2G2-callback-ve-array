@@ -6,17 +6,37 @@ const { fifaData } = require('./fifa.js')
 	
 	💡 İPUCU: Öncelikle datayı filtrelemek isteyebilirsiniz */
 
+const gamesIn2014 = fifaData.filter(game => game.Year === 2014);
+//console.log(gamesIn2014);
+
 //(a) 2014 Dünya kupası Finali Evsahibi takım ismi (dizide "Home Team Name" anahtarı)
+
+const gamesIn2014Final = gamesIn2014.filter(game => game.Stage === 'Final');
+//console.log(gamesIn2014Final);
+//console.log(gamesIn2014Final[0]['Home Team Name']);
 
 //(b) 2014 Dünya kupası Finali Deplasman takım ismi  (dizide "Away Team Name" anahtarı)
 
+//console.log(gamesIn2014Final[0]['Away Team Name']);
+
 //(c) 2014 Dünya kupası finali Ev sahibi takım golleri (dizide "Home Team Goals" anahtarı)
+
+const home = gamesIn2014Final[0]['Home Team Goals']
+console.log(home);
 
 //(d)2014 Dünya kupası finali Deplasman takım golleri  (dizide "Away Team Goals" anahtarı)
 
+const away = gamesIn2014Final[0]['Away Team Goals']
+console.log(away);
+
 //(e) 2014 Dünya kupası finali kazananı*/
 
-
+if (home > away) { 
+console.log(gamesIn2014Final[0]['Home Team Name']);
+}
+else {
+	console.log(gamesIn2014Final[0]['Away Team Name']);
+}
 /*  Görev 2: 
 	Finaller adlı fonksiyonu kullanarak aşağıdakileri uygulayın:
 	1. Bir dizi(array) olan Fifa datasını fonksiyonun birinci parametresi olarak alacak
@@ -25,9 +45,9 @@ const { fifaData } = require('./fifa.js')
 	💡 İPUCU - verilen data içindeki nesnelerin(objects) "Stage" anahtarına bakmalısınız
 */
 
-function Finaller(/* kodlar buraya */) {
-	
-    /* kodlar buraya */
+
+function Finaller(fifaData) {
+	return fifaData.filter(game => game.Stage === 'Final');
 }
 
 
@@ -39,11 +59,9 @@ function Finaller(/* kodlar buraya */) {
 	3. Finaller data setindeki tüm yılları içeren "years" adındaki diziyi(array) döndürecek
 	*/
 
-function Yillar(/* kodlar buraya */) {
-	
-    /* kodlar buraya */
+function Yillar(fifaData, Finaller) {
+	return Finaller(fifaData).map(game => game.Year);
 }
-
 
 /*  Görev 4: 
 	Bir higher-order fonksiyonunu olan Kazananlar isimli fonksiyona aşağıdakileri uygulayın:  
@@ -53,13 +71,23 @@ function Yillar(/* kodlar buraya */) {
 	💡 İPUCU: Beraberlikler(ties) için şimdilik endişelenmeyin (Detaylı bilgi için README dosyasına bakabilirsiniz.)
 	4. Tüm kazanan ülkelerin isimlerini içeren `kazananlar` adında bir dizi(array) döndürecek(return)  */ 
 
-function Kazananlar(/* kodlar buraya */) {
-	
-    /* kodlar buraya */
-	
-}
+	function Winner (game) {
 
+		if (game['Home Team Goals'] > game['Away Team Goals']) {
+		return game['Home Team Name'];
+		}
+		else {
+		return game['Away Team Name'];
+		}
+	}
 
+	function Kazananlar(fifaData, Finaller) {
+
+		return Finaller(fifaData).map(Winner);
+	}
+
+	console.log(Kazananlar(fifaData, Finaller));
+	
 
 /*  Görev 5: 
 	Bir higher-order fonksiyonu olan YillaraGoreKazananlar isimli fonksiyona aşağıdakileri uygulayın:
@@ -72,11 +100,17 @@ function Kazananlar(/* kodlar buraya */) {
 	💡 İPUCU: her cümlenin adım 4'te belirtilen cümleyle birebir aynı olması gerekmektedir.
 */
 
-function YillaraGoreKazananlar(/* kodlar buraya */) {
+function YillaraGoreKazananlar(fifaData, Finaller, Yillar, Kazananlar) {
+	function CumleYapici (game) {
+		let cumle = `${game.Year} yılında, ${Winner(game)} dünya kupasını kazandı!`;
+		return cumle;
+	}
 	
-/* kodlar buraya */
+return Finaller(fifaData).map(CumleYapici)
 
 }
+
+console.log(YillaraGoreKazananlar(fifaData, Finaller, Yillar, Kazananlar));
 
 
 /*  Görev 6: 
@@ -93,13 +127,24 @@ function YillaraGoreKazananlar(/* kodlar buraya */) {
 	
 */
 
-function OrtalamaGolSayisi(/* kodlar buraya */) {
+//let array = Finaller(fifaData);
+function OrtalamaGolSayisi(array) {
 	
-    /* kodlar buraya */
+	const HomeGoals = array.map(game => game['Home Team Goals']);
+	const AwayGoals = array.map(game => game['Away Team Goals']);
+
+	const AllGoals = HomeGoals.concat(AwayGoals);
+
+    const totalGoals = AllGoals.reduce((total, currentValue) => {
+		return total + currentValue;
+	}, 0);
 	
+	let ortalama = totalGoals/array.length;
+	return ortalama.toFixed(2);
+
 }
 
-
+console.log(OrtalamaGolSayisi(Finaller(fifaData)));
 
 /// EKSTRA ÇALIŞMALAR ///
 
